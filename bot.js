@@ -1,58 +1,70 @@
-const mineflayer = require('mineflayer');
+import { createBot } from 'mineflayer';
 
 // Hàm tạo bot
-function createBot() {
-  const bot = mineflayer.createBot({
-    host: 'vietmine.com',      // Địa chỉ server
-    port: 25565,               // Cổng server (mặc định là 25565)
-    username: 'Test',          // Tên bot
-    version: '1.8.8',          // Phiên bản Minecraft
-  });
+const bot = createBot({
+  host: 'vietmine.com',
+  port: 25565,
+  username: 'Resh_Umbrella',
+  version: '1.16.5',          // Phiên bản Minecraft
+});
 
-  // Khi bot kết nối thành công
-  bot.on('spawn', () => {
-    console.log('Bot Test đã kết nối thành công!');
+// Function to handle spawn logic
+bot.on('spawn', () => {
+  console.log('Bot Test đã kết nối thành công!');
 
-    // Sau 5 giây, thực hiện lệnh đăng nhập
+  // Thực hiện lệnh đăng nhập sau 5 giây
+  setTimeout(() => {
+    bot.chat('/login Kingreshlol123'); // Lệnh đăng nhập
+    console.log('Đã thực hiện lệnh: /login MatKhau');
+
+    // Sau 3 giây, click chuột trái vào ô đầu tiên
     setTimeout(() => {
-      bot.chat('/login MatKhau'); // Lệnh đăng nhập
-      console.log('Đã thực hiện lệnh: /login MatKhau');
+      bot.setQuickBarSlot(0); // Chọn ô đầu tiên (slot 0)
+      bot.activateItem();     // Click chuột trái
+      console.log('Đã click chuột trái vào ô đầu tiên của hotbar.');
+    }, 3000);
+  }, 5000);
+});
 
-      // Sau 3 giây, chuyển đến ô đầu tiên của hotbar và click chuột trái
-      setTimeout(() => {
-        bot.setQuickBarSlot(0); // Chọn ô đầu tiên (slot 0)
-        bot.activateItem();     // Click chuột trái
-        console.log('Đã click chuột trái vào ô đầu tiên của hotbar.');
-      }, 3000); // Chờ 3 giây sau lệnh đăng nhập
-    }, 5000); // Chờ 5 giây sau khi vào server
-  });
-
-  // Khi bot bị kick
-  bot.on('kicked', (reason) => {
-    console.log(`Bot bị kick: ${reason}`);
-    console.log('Đang kết nối lại sau 2 giây...');
-    setTimeout(() => {
-      createBot(); // Tạo bot mới để kết nối lại
-    }, 2000);
-  });
-
-  // Khi bot gặp lỗi
-  bot.on('error', (err) => {
-    console.log('Lỗi:', err);
-    console.log('Đang thử kết nối lại sau 2 giây...');
-    setTimeout(() => {
-      createBot(); // Tạo bot mới để kết nối lại
-    }, 2000);
-  });
-
-  // Khi kết nối bị đóng
-  bot.on('end', () => {
-    console.log('Kết nối bị đóng. Đang kết nối lại...');
-    setTimeout(() => {
-      createBot(); // Tạo bot mới để kết nối lại
-    }, 2000);
-  });
+// Retry function for clicking a slot
+async function clickSlotWithRetry(bot, slot, window) {
+  try {
+    await bot.clickWindow(slot, 0, 0); // Left click
+    console.log(`Clicked slot ${slot} successfully.`);
+  } catch (err) {
+    console.error(`Error clicking slot ${slot}:`, err);
+    console.log('Retrying in 1 second...');
+    setTimeout(() => clickSlotWithRetry(bot, slot, window), 1000);
+  }
 }
 
-// Tạo bot ban đầu
-createBot();
+// Handle opening a window
+bot.on('windowOpen', (window) => {
+  const lavaBucket = window.slots.find(item => item && item.name === 'lava_bucket');
+  if (lavaBucket) {
+    console.log('Lava bucket found! Attempting to withdraw...');
+    clickSlotWithRetry(bot, lavaBucket.slot, window);
+  } else {
+    console.log('No lava bucket found.');
+  }
+  bot.closeWindow(window);
+});
+
+// Handle warp command
+const welcome = () => {
+  bot.chat('/warp');
+};
+
+bot.on('spawn', welcome);
+
+// Handle experience bottles
+bot.on('windowOpen', (window) => {
+  const expBottle = window.slots.find(item => item && item.name === 'experience_bottle');
+  if (expBottle) {
+    console.log('Experience bottle found! Attempting to withdraw...');
+    clickSlotWithRetry(bot, expBottle.slot, window);
+  } else {
+    console.log('No experience bottle found.');
+  }
+  bot.closeWindow(window);
+});
