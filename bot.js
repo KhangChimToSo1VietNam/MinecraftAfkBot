@@ -3,7 +3,7 @@ import { createBot } from 'mineflayer';
 const bot = createBot({
   host: 'vietmine.com',
   port: 25565,
-  username: 'Resh_Umbrella',
+  username: 'InfinityPremium',
   version: '1.16.5', // Minecraft version
 });
 
@@ -25,7 +25,7 @@ bot.once('spawn', () => {
 
   // Perform login
   setTimeout(() => {
-    bot.chat('/login Kingreshlol123');
+    bot.chat('/login SexSexSex');
     console.log('Logged in successfully.');
   }, 2000);
 
