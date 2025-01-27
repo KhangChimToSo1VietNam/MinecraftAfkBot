@@ -1,1 +1,2 @@
-;
+
+  bot.once('windowOpen', (window) => {
