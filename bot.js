@@ -4,7 +4,7 @@ import { createBot } from 'mineflayer';
 const bot = createBot({
   host: 'vietmine.com',
   port: 25565,
-  username: 'Resh_Umbrella',
+  username: 'InfinityPremium',
   version: '1.16.5',          // Phiên bản Minecraft
 });
 
@@ -14,7 +14,7 @@ bot.on('spawn', () => {
 
   // Thực hiện lệnh đăng nhập sau 5 giây
   setTimeout(() => {
-    bot.chat('/login Kingreshlol123'); // Lệnh đăng nhập
+    bot.chat('/login SexSexSex'); // Lệnh đăng nhập
     console.log('Đã thực hiện lệnh: /login MatKhau');
 
     // Sau 3 giây, click chuột trái vào ô đầu tiên
